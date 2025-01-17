@@ -1,0 +1,24 @@
+openssl_conf = openssl_init
+
+[openssl_init]
+ssl_conf = ssl_module
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+oqsprovider = liboqs_provider
+
+[liboqs_provider]
+activate = 1
+module = /opt/openssl/lib/ossl-modules/oqsprovider.so
+
+[default_sect]
+activate = 1
+
+[ssl_module]
+system_default = tls_system_default
+
+[tls_system_default]
+MinProtocol = TLSv1.2
+CipherString = DEFAULT:@SECLEVEL=3
+Groups = X25519MLKEM768:x25519_kyber768:x25519:prime256v1:x448:secp521r1:secp384r1:ffdhe3072
