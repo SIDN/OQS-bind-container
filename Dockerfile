@@ -2,13 +2,14 @@
 #FROM ubuntu:latest
 FROM ubuntu:24.04
 RUN apt-get update -y
+RUN apt-get upgrade -y
 RUN apt-get install -y git build-essential libssl-dev cmake wget
 
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz && tar xzf openssl-3.4.0.tar.gz
 RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j && make install
 
 ENV PATH="/opt/openssl/bin:$PATH"
-ENV LD_LIBRARY_PATH="/opt/openssl/lib:$LD_LIBARY_PATH"
+ENV LD_LIBRARY_PATH="/opt/openssl/lib:/opt/openssl/lib64:$LD_LIBARY_PATH"
 ENV OPENSSL_ROOT_DIR="/opt/openssl"
 ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
@@ -40,12 +41,26 @@ RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-de
 RUN git clone https://github.com/desec-io/OQS-bind.git
 ADD patches/falcon512.patch /OQS-bind/falcon512.patch
 ADD patches/mayo2.patch /OQS-bind/mayo2.patch
+ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon512.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2.patch
+RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
 RUN cd OQS-bind && autoreconf -fi
 RUN cd OQS-bind && ./configure CC=gcc LIBS="-loqs" CFLAGS="-I$liboqs_DIR/include" LDFLAGS="-L$liboqs_DIR/lib" --with-openssl=$OPENSSL_ROOT_DIR --disable-doh --enable-full-report
 RUN cd OQS-bind && make -j
 RUN cd OQS-bind && make install
 
-CMD /bin/bash
+RUN echo "/opt/openssl/lib" > /etc/ld.so.conf.d/oqs-bind.conf
+RUN echo "/opt/openssl/lib64" >> /etc/ld.so.conf.d/oqs-bind.conf
+RUN echo "/usr/local/lib/bind" >> /etc/ld.so.conf.d/oqs-bind.conf
+RUN ldconfig
+
+#cleanup
+
+RUN rm -rf /openssl-3.4.0
+RUN rm -rf /OQS-bind
+RUN rm -rf /oqs-provider
+RUN rm -rf /liboqs
+
+CMD named -g
 #ENTRYPOINT /OQS-bind/bin/dnssec/dnssec-signzone
