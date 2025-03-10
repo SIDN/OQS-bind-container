@@ -36,6 +36,8 @@ RUN cd oqs-provider && cmake --install _build
 ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
 ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
+RUN test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g'
+
 RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
 
 RUN git clone https://github.com/desec-io/OQS-bind.git
@@ -48,7 +50,7 @@ RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2.pa
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace dnssec-verify.patch
 RUN cd OQS-bind && autoreconf -fi
-RUN cd OQS-bind && ./configure CC=gcc LIBS="-loqs" CFLAGS="-I$liboqs_DIR/include" LDFLAGS="-L$liboqs_DIR/lib" --with-openssl=$OPENSSL_ROOT_DIR --disable-doh --enable-full-report
+RUN cd OQS-bind && ./configure CC=gcc LIBS="-loqs" CFLAGS="-I$liboqs_DIR/include" LDFLAGS="-L$liboqs_DIR/lib -L$liboqs_DIR/lib64" --with-openssl=$OPENSSL_ROOT_DIR --disable-doh --enable-full-report
 RUN cd OQS-bind && make -j
 RUN cd OQS-bind && make install
 
