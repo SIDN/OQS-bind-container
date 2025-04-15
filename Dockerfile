@@ -36,7 +36,7 @@ RUN cd oqs-provider && cmake --install _build
 ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
 ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
-RUN test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g'
+RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
 
 RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
 
