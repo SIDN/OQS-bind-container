@@ -9,6 +9,10 @@ RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-de
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz && tar xzf openssl-3.4.0.tar.gz
 RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j && make install
 
+RUN git clone https://github.com/open-quantum-safe/liboqs.git liboqs
+RUN git clone https://github.com/open-quantum-safe/oqs-provider.git oqs-provider
+RUN git clone https://github.com/desec-io/OQS-bind.git
+
 ENV PATH="/opt/openssl/bin:$PATH"
 ENV LD_LIBRARY_PATH="/opt/openssl/lib:/opt/openssl/lib64:$LD_LIBARY_PATH"
 ENV OPENSSL_ROOT_DIR="/opt/openssl"
@@ -16,8 +20,6 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
-#RUN git clone --depth=1 https://github.com/open-quantum-safe/liboqs.git liboqs
-RUN git clone https://github.com/open-quantum-safe/liboqs.git liboqs
 #RUN cd liboqs && git checkout 31bdf13d4b8717b143f9ed584dfb8faceb80ebd9
 #RUN cd liboqs && git checkout 971173ad82327ede5027b6d48e81bcaff92f417c
 #RUN cd liboqs && git checkout 39688e908b239b77b9775c5469df244021953d5d
@@ -27,7 +29,6 @@ RUN cmake --build liboqs/build --parallel 4
 RUN cmake --build liboqs/build --target install
 #
 # Build liboqs to /app/oqsprovider-bin
-RUN git clone https://github.com/open-quantum-safe/oqs-provider.git oqs-provider
 RUN cd oqs-provider && git checkout c4130ea3ae14f8adfb08235d0d7c5c5a3470666b
 RUN cd oqs-provider && git checkout 4db09a9dc540543ff0e22b2713757a7e90e1f0c6
 RUN cd oqs-provider && cmake -S . -B _build
@@ -39,7 +40,6 @@ ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
 
-RUN git clone https://github.com/desec-io/OQS-bind.git
 ADD patches/falcon512.patch /OQS-bind/falcon512.patch
 ADD patches/mayo2.patch /OQS-bind/mayo2.patch
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
