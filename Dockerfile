@@ -4,6 +4,7 @@ FROM ubuntu:24.04
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y git build-essential libssl-dev cmake wget
+RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
 
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz && tar xzf openssl-3.4.0.tar.gz
 RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j && make install
@@ -37,8 +38,6 @@ ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
 ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
-
-RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
 
 RUN git clone https://github.com/desec-io/OQS-bind.git
 ADD patches/falcon512.patch /OQS-bind/falcon512.patch
