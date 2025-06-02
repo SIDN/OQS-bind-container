@@ -25,7 +25,7 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 #RUN cd liboqs && git checkout 39688e908b239b77b9775c5469df244021953d5d
 #RUN cd liboqs && git checkout 26f83d082c01b504140fdbebb6b8651ba4b6f02f # 0.11.0
 RUN cd liboqs && git checkout 0.13.0
-RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR -DOQS_BUILD_ONLY_LIB=ON -DOQS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON -D-DOQS_ENABLE_SIG_STFL_XMSS=ON
+RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR -DOQS_BUILD_ONLY_LIB=ON
 RUN cmake --build liboqs/build --parallel 4
 RUN cmake --build liboqs/build --target install
 #
