@@ -44,10 +44,12 @@ RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-o
 
 ADD patches/falcon512.patch /OQS-bind/falcon512.patch
 ADD patches/mayo2.patch /OQS-bind/mayo2.patch
+ADD patches/mayo2-round2.patch /OQS-bind/mayo2-round2.patch
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 ADD patches/dnssec-verify.patch /OQS-bind/dnssec-verify.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon512.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2.patch
+RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2-round2.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace dnssec-verify.patch
 RUN cd OQS-bind && autoreconf -fi

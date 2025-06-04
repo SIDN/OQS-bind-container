@@ -3,8 +3,8 @@ index 3a520aea8b..6a275ca6f2 100644
 --- a/lib/dns/include/dns/keyvalues.h
 +++ b/lib/dns/include/dns/keyvalues.h
 @@ -112,7 +112,8 @@
- #define DNS_SIG_MAYO2SIZE 180
- #define DNS_KEY_MAYO2SIZE 5488
+ #define DNS_SIG_MAYO2SIZE 186
+ #define DNS_KEY_MAYO2SIZE 4912
  
 -#define DNS_SIG_FALCON512SIZE 666
 +/* #define DNS_SIG_FALCON512SIZE 666  # padded*/
