@@ -11,7 +11,7 @@ RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/open
 
 RUN git clone https://github.com/open-quantum-safe/liboqs.git liboqs
 RUN git clone https://github.com/open-quantum-safe/oqs-provider.git oqs-provider
-RUN git clone https://github.com/desec-io/OQS-bind.git
+RUN git clone https://github.com/SIDN/OQS-bind.git
 
 ENV PATH="/opt/openssl/bin:$PATH"
 ENV LD_LIBRARY_PATH="/opt/openssl/lib:/opt/openssl/lib64:$LD_LIBARY_PATH"
@@ -42,16 +42,9 @@ ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
 
-ADD patches/falcon512.patch /OQS-bind/falcon512.patch
-ADD patches/mayo2.patch /OQS-bind/mayo2.patch
-ADD patches/mayo2-round2.patch /OQS-bind/mayo2-round2.patch
+RUN cd OQS-bind && git checkout 2aeb0420392282d062feeb6831ae885d08ce2b6c
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
-ADD patches/dnssec-verify.patch /OQS-bind/dnssec-verify.patch
-RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon512.patch
-RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2.patch
-RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace mayo2-round2.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
-RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace dnssec-verify.patch
 RUN cd OQS-bind && autoreconf -fi
 RUN cd OQS-bind && ./configure CC=gcc LIBS="-loqs" CFLAGS="-I$liboqs_DIR/include" LDFLAGS="-L$liboqs_DIR/lib -L$liboqs_DIR/lib64" --with-openssl=$OPENSSL_ROOT_DIR --disable-doh --enable-full-report
 RUN cd OQS-bind && make -j
