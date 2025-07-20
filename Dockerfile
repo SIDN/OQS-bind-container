@@ -45,8 +45,8 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
-RUN cd liboqs && git checkout e94a7a8e7bf7270ad116d3e3509102c24d2ae132 # wip-sqisign
-RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR
+RUN cd liboqs && git checkout 564c50aff5d267c43c605eb72d2eac51b287151c # wip-sqisign-avx2
+RUN cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX=$liboqs_DIR # XXX -DBUILD_SHARED_LIBS=ON is not a success with our sqisign port
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN cmake --build liboqs/build --target install
 # Basic sanity test to verify if algorithm's integration in liboqs works
