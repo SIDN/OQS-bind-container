@@ -34,8 +34,8 @@ RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-de
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz && tar xzf openssl-3.4.0.tar.gz
 RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j$(nproc) && make install
 
-RUN git clone https://github.com/open-quantum-safe/liboqs.git liboqs
-RUN git clone https://github.com/open-quantum-safe/oqs-provider.git oqs-provider
+RUN git clone https://github.com/SIDN/liboqs
+RUN git clone https://github.com/SIDN/oqs-provider
 RUN git clone https://github.com/SIDN/OQS-bind.git
 
 ENV PATH="/opt/openssl/bin:$PATH"
@@ -45,13 +45,15 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
-RUN cd liboqs && git checkout 0.13.0
-RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR -DOQS_BUILD_ONLY_LIB=ON
+RUN cd liboqs && git checkout e94a7a8e7bf7270ad116d3e3509102c24d2ae132 # wip-sqisign
+RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN cmake --build liboqs/build --target install
+# Basic sanity test to verify if algorithm's integration in liboqs works
+RUN ./liboqs/build/tests/test_sig sqisign-1
 
 # Build liboqs to /app/oqsprovider-bin
-RUN cd oqs-provider && git checkout 0.9.0
+RUN cd oqs-provider && git checkout cedcdf34416faf7cc9495438ea06c6df264da444 # wip-sqisign
 RUN cd oqs-provider && cmake -S . -B _build
 RUN cd oqs-provider && cmake --build _build
 RUN cd oqs-provider && cmake --install _build
@@ -61,7 +63,7 @@ ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
 
-RUN cd OQS-bind && git checkout 2aeb0420392282d062feeb6831ae885d08ce2b6c
+RUN cd OQS-bind && git checkout acd32406f844bdc65d269eab0a9a23ed0024fd79 # sqisign
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
 RUN cd OQS-bind && autoreconf -fi
@@ -83,6 +85,11 @@ RUN rm -rf /liboqs
 
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
+
+# Do some tests to verify functionality
+RUN echo If we get here: the following never finishes. Why?
+RUN dnssec-keygen -a SQISIGN1 example.nl
+RUN dnssec-keygen -a SQISIGN1 -f KSK example.nl
 
 CMD named -g
 #ENTRYPOINT /OQS-bind/bin/dnssec/dnssec-signzone
