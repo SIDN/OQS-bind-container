@@ -45,7 +45,7 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
-RUN cd liboqs && git checkout e94a7a8e7bf7270ad116d3e3509102c24d2ae132 # wip-sqisign
+RUN cd liboqs && git checkout 85e6927ca15f6a998dee7a0c3ceaf657432632ba # wip-sqisign
 RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN cmake --build liboqs/build --target install
@@ -87,7 +87,6 @@ RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
 
 # Do some tests to verify functionality
-RUN echo If we get here: the following never finishes. Why?
 RUN dnssec-keygen -a SQISIGN1 example.nl
 RUN dnssec-keygen -a SQISIGN1 -f KSK example.nl
 
