@@ -87,7 +87,6 @@ RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
 
 # Do some tests to verify functionality
-RUN echo If we get here: the following never finishes. Why?
 RUN dnssec-keygen -a SQISIGN1 example.nl
 RUN dnssec-keygen -a SQISIGN1 -f KSK example.nl
 
