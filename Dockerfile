@@ -86,9 +86,5 @@ RUN rm -rf /liboqs
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
 
-# Do some tests to verify functionality
-RUN dnssec-keygen -a SQISIGN1 example.nl
-RUN dnssec-keygen -a SQISIGN1 -f KSK example.nl
-
 CMD named -g
 #ENTRYPOINT /OQS-bind/bin/dnssec/dnssec-signzone
