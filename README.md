@@ -1,6 +1,7 @@
-# Bind 9 nameserver oqs support for Falcon and Mayo
+# OQS-bind with Falcon, MAYO and SQISign support, packaged in a container
 
-This repository contains the scripts to build bind DNS server with support for the Falcon quantum-safe algorithm.
+This repository contains the scripts to build a container with SIDN Labs' [OQS-bind](https://github.com/SIDN/OQS-bind), which is a fork of deSEC's and Jason Goertzen's OQS-bind.
+Our fork supports the Falcon-512, MAYO-2 and SQISign-1 post-quantum algorithms.
 
 ## Building the image
 
