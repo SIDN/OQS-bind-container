@@ -32,6 +32,7 @@ RUN apt-get install -y git build-essential libssl-dev cmake wget
 RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
 
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz && tar xzf openssl-3.4.0.tar.gz
+RUN echo "e15dda82fe2fe8139dc2ac21a36d4ca01d5313c75f99f46c4e8a27709b7294bf  openssl-3.4.0.tar.gz" | sha256sum -c -
 RUN cd openssl-3.4.0 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j$(nproc) && make install
 
 RUN git clone https://github.com/SIDN/liboqs
