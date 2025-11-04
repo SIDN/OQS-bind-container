@@ -30,12 +30,13 @@ RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y git build-essential libssl-dev cmake wget
 RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
+RUN apt-get install -y libgmp-dev
 
 RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.4.3/openssl-3.4.3.tar.gz && tar xzf openssl-3.4.3.tar.gz
 RUN echo "fa727ed1399a64e754030a033435003991aee36bda9a5b080995cb2ac5cf7f37  openssl-3.4.3.tar.gz" | sha256sum -c -
 RUN cd openssl-3.4.3 && ./Configure --openssldir=/opt/openssl --prefix=/opt/openssl && make -j$(nproc) && make install
 
-RUN git clone https://github.com/SIDN/liboqs
+RUN git clone https://github.com/open-quantum-safe/liboqs
 RUN git clone https://github.com/SIDN/oqs-provider
 RUN git clone https://github.com/SIDN/OQS-bind.git
 
@@ -46,15 +47,15 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
-RUN cd liboqs && git checkout 85e6927ca15f6a998dee7a0c3ceaf657432632ba # wip-sqisign
+RUN cd liboqs && git checkout 9686ba3704757f8fdcc191c754d34c79ad95f5cf # sqisign
 RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN cmake --build liboqs/build --target install
 # Basic sanity test to verify if algorithm's integration in liboqs works
-RUN ./liboqs/build/tests/test_sig sqisign-1
+RUN ./liboqs/build/tests/test_sig SQIsign-lvl1
 
 # Build liboqs to /app/oqsprovider-bin
-RUN cd oqs-provider && git checkout cedcdf34416faf7cc9495438ea06c6df264da444 # wip-sqisign
+RUN cd oqs-provider && git checkout 6d87d2994fada77f0e3408e0baf357b89932d149 # wip-sqisign
 RUN cd oqs-provider && cmake -S . -B _build
 RUN cd oqs-provider && cmake --build _build
 RUN cd oqs-provider && cmake --install _build
@@ -64,7 +65,7 @@ ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN (test -f /opt/openssl/lib64/ossl-modules/oqsprovider.so && sed -i /opt/pqc-openssl.cnf -e 's#/opt/openssl/lib#/opt/openssl/lib64#g') || :
 
-RUN cd OQS-bind && git checkout acd32406f844bdc65d269eab0a9a23ed0024fd79 # sqisign
+RUN cd OQS-bind && git checkout bded5721f0b2929d875f57c756abbca4b357c097 # sidnlabs-pqc
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
 RUN cd OQS-bind && autoreconf -fi
