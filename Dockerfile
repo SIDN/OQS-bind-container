@@ -47,6 +47,8 @@ ENV liboqs_DIR="$OPENSSL_ROOT_DIR"
 
 # Build liboqs and install in /app/liboqs-bin
 
+# XXX the checkout below will fail if progress is made on
+# XXX https://github.com/open-quantum-safe/liboqs/pull/2277
 RUN cd liboqs && git checkout 9686ba3704757f8fdcc191c754d34c79ad95f5cf # sqisign
 RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$liboqs_DIR
 RUN cmake --build liboqs/build --parallel $(nproc)
