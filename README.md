@@ -46,19 +46,7 @@ We build on separate machines for different architectures.
 	podman push ghcr.io/sidn/oqs-bind-container:amd64
 
 
-
-
-
-	# If updating a previous image:
-	podman tag localhost/oqs-bind-container ghcr.io/sidn/oqs-bind-container:latest ghcr.io/sidn/oqs-bind-container:v2
-	podman manifest rm localhost/oqs-bind-container
-	
-	# Finally publish the manifest
-	podman manifest push --all oqs-bind-container docker://ghcr.io/sidn/oqs-bind-container:amd64
-
-
-
-
+Then on some machine:
 
 	# First, initialise the manifest
 	podman manifest create ghcr.io/sidn/oqs-bind-container:v2
