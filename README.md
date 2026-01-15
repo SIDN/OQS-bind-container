@@ -56,6 +56,6 @@ Then on some machine:
 	podman manifest add ghcr.io/sidn/oqs-bind-container:v2 ghcr.io/sidn/oqs-bind-container:arm64
 	# Merge all files
 	podman manifest push ghcr.io/sidn/oqs-bind-container:v2
-	podman manifest push ghcr.io/sidn/oqs-bind-container:latest
+	podman manifest push ghcr.io/sidn/oqs-bind-container:v2 ghcr.io/sidn/oqs-bind-container:latest
 
 Please note that we had difficulties building images for other platforms. We obtained the best results by building ARM64 images on ARM platforms, and AMD64 on AMD64 platforms, after which we publish them.
