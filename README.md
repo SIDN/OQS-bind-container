@@ -20,4 +20,28 @@ To build the image for distribution, run the following commands:
 	podman build --platform linux/amd64,linux/arm64 -f Dockerfile --tag=pqc-bind-oqs:latest
 	# podman push
 
-Optionally, we can publish it to a container registry, but that is future work for now.
+To distribute this container to Github, we do the following steps.
+First, Obtain a personal access token
+
+	export CR_PAT=YOUR_TOKEN
+
+And login to Github using this token
+
+	echo $CR_PAT | podman login ghcr.io -u USERNAME --password-stdin
+	> Login Succeeded
+
+Then, create a manifest, build the container, and push it, as in this example:
+
+	# First, initialise the manifest
+	podman manifest create localhost/oqs-bind-container
+	
+	# Build the image attaching them to the manifest
+	podman build --jobs=4 --platform linux/amd64,linux/arm64  --manifest oqs-bind-container .
+	
+	# If updating a previous image:
+	podman tag localhost/oqs-bind-container ghcr.io/SIDN/oqs-bind-container:latest ghcr.io/SIDN/oqs-bind-container:v2
+	podman manifest rm localhost/oqs-bind-container
+	
+	# Finally publish the manifest
+	podman manifest push oqs-bind-container ghcr.io/SIDN/oqs-bind-container:latest ghcr.io/SIDN/oqs-bind-container:v2
+
