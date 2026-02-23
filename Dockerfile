@@ -73,16 +73,14 @@ RUN cd OQS-bind && make install DESTDIR=${DESTDIR}
 RUN echo "/usr/local/lib/bind" >> /etc/ld.so.conf.d/oqs-bind.conf
 RUN ldconfig
 
-#cleanup
-# RUN rm -rf /OQS-bind
-# RUN rm -rf /oqs-provider
-# RUN rm -rf /liboqs
+
+### Now build production image
 
 FROM ubuntu:${UBUNTU_VERSION} as production
 
 COPY --from=build /dist /
 
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libuv1-dev liburcu-dev && apt-get -y clean
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
