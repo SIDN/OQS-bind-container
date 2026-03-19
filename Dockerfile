@@ -38,6 +38,7 @@ RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y git build-essential libssl-dev cmake wget
 RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
+RUN apt-get install -y libjson-c-dev
 RUN apt-get install -y libgmp-dev
 
 RUN git clone https://github.com/open-quantum-safe/liboqs
@@ -80,7 +81,7 @@ FROM ubuntu:${UBUNTU_VERSION} as production
 
 COPY --from=build /dist /
 
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libjson-c5 libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
