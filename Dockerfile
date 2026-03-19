@@ -88,5 +88,4 @@ ADD named.conf /usr/local/etc/named.conf
 
 RUN ldconfig
 
-CMD named -g
-#ENTRYPOINT /OQS-bind/bin/dnssec/dnssec-signzone
+ENTRYPOINT named -g
