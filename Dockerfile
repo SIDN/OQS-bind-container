@@ -62,7 +62,7 @@ RUN cd oqs-provider && liboqs_DIR=$DESTDIR/usr/local/lib/cmake/liboqs/ CFLAGS=-I
 RUN cd oqs-provider && cmake --build _build
 RUN cd oqs-provider && CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --install _build
 
-RUN cd OQS-bind && git checkout bded5721f0b2929d875f57c756abbca4b357c097 # sidnlabs-pqc
+RUN cd OQS-bind && git checkout 4b5e02c72254bc0047f0480cf69018bb4b6b465d # sidnlabs-pqc
 ENV LD_LIBRARY_PATH=/dist/usr/local/lib
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
