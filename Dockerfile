@@ -88,4 +88,4 @@ ADD named.conf /usr/local/etc/named.conf
 
 RUN ldconfig
 
-ENTRYPOINT named -g
+CMD named -g
