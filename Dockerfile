@@ -43,7 +43,7 @@ RUN apt-get install -y libgmp-dev
 
 RUN git clone https://github.com/open-quantum-safe/liboqs
 RUN git clone https://github.com/SIDN/oqs-provider
-RUN git clone https://github.com/SIDN/OQS-bind.git
+RUN git clone https://github.com/tbliki/OQS-bind.git
 
 # Build liboqs and install in /app/liboqs-bin
 
@@ -62,7 +62,8 @@ RUN cd oqs-provider && liboqs_DIR=$DESTDIR/usr/local/lib/cmake/liboqs/ CFLAGS=-I
 RUN cd oqs-provider && cmake --build _build
 RUN cd oqs-provider && CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --install _build
 
-RUN cd OQS-bind && git checkout 4b5e02c72254bc0047f0480cf69018bb4b6b465d # sidnlabs-pqc
+#RUN cd OQS-bind && git checkout 4b5e02c72254bc0047f0480cf69018bb4b6b465d # sidnlabs-pqc
+RUN cd OQS-bind && git checkout sidnlabs-pqc
 ENV LD_LIBRARY_PATH=/dist/usr/local/lib
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
@@ -82,6 +83,9 @@ FROM ubuntu:${UBUNTU_VERSION} as production
 COPY --from=build /dist /
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libjson-c5 libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
+
+ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
+ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
 
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
