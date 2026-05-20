@@ -86,6 +86,7 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libjson-c5 lib
 
 ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
 ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
+ENV OPENSSL_MODULES=/usr/lib/x86_64-linux-gnu/ossl-modules
 
 RUN mkdir /var/cache/bind
 ADD named.conf /usr/local/etc/named.conf
