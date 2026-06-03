@@ -26,7 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ARG UBUNTU_VERSION=25.10
-FROM ubuntu:${UBUNTU_VERSION} as build
+FROM ubuntu:${UBUNTU_VERSION} AS build
 
 ENV DESTDIR=/dist
 #ENV CMAKE_INSTALL_PREFIX=${DESTDIR}
@@ -63,7 +63,7 @@ RUN cd oqs-provider && cmake --build _build
 RUN cd oqs-provider && CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --install _build
 
 #RUN cd OQS-bind && git checkout 4b5e02c72254bc0047f0480cf69018bb4b6b465d # sidnlabs-pqc
-RUN cd OQS-bind && git checkout sidnlabs-pqc
+RUN cd OQS-bind && git checkout 1095f0774224c4bd785750dccc21d51d1b78f7a2 # sidnlabs-pqc (incl SNOVA support)
 ENV LD_LIBRARY_PATH=/dist/usr/local/lib
 ADD patches/falcon-unpadded.patch /OQS-bind/falcon-unpadded.patch
 RUN cd OQS-bind && git apply  --ignore-space-change --ignore-whitespace falcon-unpadded.patch
@@ -78,7 +78,7 @@ RUN ldconfig
 
 ### Now build production image
 
-FROM ubuntu:${UBUNTU_VERSION} as production
+FROM ubuntu:${UBUNTU_VERSION} AS production
 
 COPY --from=build /dist /
 
