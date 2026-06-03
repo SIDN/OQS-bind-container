@@ -43,7 +43,7 @@ RUN apt-get install -y libgmp-dev
 
 RUN git clone https://github.com/open-quantum-safe/liboqs
 RUN git clone https://github.com/SIDN/oqs-provider
-RUN git clone https://github.com/tbliki/OQS-bind.git
+RUN git clone https://github.com/SIDN/OQS-bind
 
 # Build liboqs and install in /app/liboqs-bin
 
