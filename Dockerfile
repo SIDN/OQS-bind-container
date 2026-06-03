@@ -82,7 +82,7 @@ FROM ubuntu:${UBUNTU_VERSION} AS production
 
 COPY --from=build /dist /
 
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libjson-c5 libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libcap2 libjson-c5 libuv1-dev liburcu-dev && rm -rf /var/lib/apt/lists/*
 
 ADD pqc-openssl.cnf /opt/pqc-openssl.cnf
 ENV OPENSSL_CONF=/opt/pqc-openssl.cnf
