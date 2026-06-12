@@ -50,7 +50,7 @@ RUN git clone https://github.com/SIDN/OQS-bind
 # XXX the checkout below will fail if progress is made on
 # XXX https://github.com/open-quantum-safe/liboqs/pull/2277
 RUN cd liboqs && git checkout 9686ba3704757f8fdcc191c754d34c79ad95f5cf # sqisign
-RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_MINIMAL_BUILD="SIG_falcon_512;SIG_mayo2;SIG_snova_24_5_4;SIG_snova_37_17_2;SIG_sqisign_lvl1"
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --build liboqs/build --target install
 # Basic sanity test to verify if algorithm's integration in liboqs works
