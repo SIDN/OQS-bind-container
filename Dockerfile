@@ -36,10 +36,9 @@ RUN mkdir -p ${DESTDIR}
 
 RUN apt-get update -y
 RUN apt-get upgrade -y
-RUN apt-get install -y git build-essential libssl-dev cmake wget
-RUN apt-get install -y autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev
-RUN apt-get install -y libjson-c-dev
-RUN apt-get install -y libgmp-dev
+RUN apt-get install -y git build-essential libssl-dev cmake wget libgmp-dev astyle gcc ninja-build \
+                     python3-pytest python3-pytest-xdist unzip xsltproc doxygen graphviz python3-yaml \
+                     valgrind autoconf pkgconf libtool liburcu-dev libcap-dev libuv1-dev libjson-c-dev
 
 RUN git clone https://github.com/open-quantum-safe/liboqs
 RUN git clone https://github.com/SIDN/oqs-provider
@@ -49,17 +48,25 @@ RUN git clone https://github.com/SIDN/OQS-bind
 
 # XXX the checkout below will fail if progress is made on
 # XXX https://github.com/open-quantum-safe/liboqs/pull/2277
-RUN cd liboqs && git checkout 9686ba3704757f8fdcc191c754d34c79ad95f5cf # sqisign
-RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_MINIMAL_BUILD="SIG_falcon_512;SIG_mayo_2;SIG_snova_24_5_4;SIG_snova_37_17_2;SIG_sqisign_lvl1"
+# Update Elmer 15/Jun/2026: sqisign branch has performance issues fixed in commit 573fb25
+# Removed support for SIG_sqisign_lvl1 for now (ELa 15/Jun/2026)
+RUN cd liboqs && git checkout 97f6b86b1b6d109cfd43cf276ae39c2e776aed80 # 0.15.0
+RUN cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_MINIMAL_BUILD="SIG_falcon_512;SIG_mayo_2;SIG_snova_SNOVA_24_5_4;SIG_snova_SNOVA_37_17_2"
 RUN cmake --build liboqs/build --parallel $(nproc)
 RUN CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --build liboqs/build --target install
+#RUN mkdir liboqs/build
+#RUN cd liboqs/build && cmake -GNinja .. 
+#RUN cd liboqs/build && ninja
+
 # Basic sanity test to verify if algorithm's integration in liboqs works
-RUN ./liboqs/build/tests/test_sig SQIsign-lvl1
+#RUN ./liboqs/build/tests/test_sig SQIsign-lvl1
 
 # Build liboqs to /app/oqsprovider-bin
-RUN cd oqs-provider && git checkout 6d87d2994fada77f0e3408e0baf357b89932d149 # wip-sqisign
+# ELa 15/Jun/2026 use our edits on top of commit 573fb25 to fix performance bug
+RUN cd oqs-provider && git checkout dcdb867cd4cadb9115974b3c3ee008d56b66720c # dynamic-filter-enable-cache
 RUN cd oqs-provider && liboqs_DIR=$DESTDIR/usr/local/lib/cmake/liboqs/ CFLAGS=-I$DESTDIR/usr/local/include/ cmake -S . -B _build
 RUN cd oqs-provider && cmake --build _build
+RUN cd oqs-provider && ctest --test-dir _build
 RUN cd oqs-provider && CMAKE_INSTALL_PREFIX=${DESTDIR} cmake --install _build
 
 #RUN cd OQS-bind && git checkout 4b5e02c72254bc0047f0480cf69018bb4b6b465d # sidnlabs-pqc
