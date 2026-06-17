@@ -36,13 +36,13 @@ We build on separate machines for different architectures.
 
 	## ARM64 machine 1
 	# Build the image attaching them to the manifest
-	podman build --jobs=4 --platform linux/arm64 -t ghcr.io/sidn/oqs-bind-container:arm64 .
+	podman build --no-cache --jobs=4 --platform linux/arm64 -t ghcr.io/sidn/oqs-bind-container:arm64 .
 	podman push ghcr.io/sidn/oqs-bind-container:arm64
 
 
 	## AMD64 machine 2
 	# Build the image attaching them to the manifest
-	podman build --jobs=4 --platform linux/amd64 -t ghcr.io/sidn/oqs-bind-container:amd64 .
+	podman build --no-cache --jobs=4 --platform linux/amd64 -t ghcr.io/sidn/oqs-bind-container:amd64 .
 	podman push ghcr.io/sidn/oqs-bind-container:amd64
 
 
